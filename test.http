@@ -1,0 +1,33 @@
+POST http://localhost:5000/control
+Content-Type: application/json
+
+{
+  "ID": 101,
+  "Nome": "Compra do mes",
+  "Tipo": "Mercado",
+  "Valor": 800.50,
+  "Forma": "Credito",
+  "Parcelas": 1,
+  "Data": "2025-09-11",
+  "Cartao_ID": 1,
+  "Modo": "único"
+}
+
+#PUT http://localhost:5000/control/101
+# Content-Type: application/json
+
+# {
+#   "ID": 101,
+#   "Nome": "Compra do mes editado",
+#   "Tipo": "Mercado",
+#   "Valor": 900.75,
+#   "Forma": "Credito",
+#   "Parcelas": 3,
+#   "Data": "2025-09-11",
+#   "Cartao_ID": 3,
+#   "Modo": "Mensal"
+# }
+
+#GET http://localhost:5000/control/101
+
+#DELETE http://localhost:5000/control/101
