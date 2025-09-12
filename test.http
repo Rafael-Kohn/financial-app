@@ -13,7 +13,7 @@ Content-Type: application/json
   "Modo": "único"
 }
 
-#PUT http://localhost:5000/control/101
+# PUT http://localhost:5000/control/101
 # Content-Type: application/json
 
 # {
