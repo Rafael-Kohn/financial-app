@@ -1,13 +1,33 @@
-from flask import Blueprint
-from .cards import cards_bp
-from .control import control_bp
-from .installments import recorrentes_bp
+# importa os blueprints das rotas (seus arquivos de rota devem expor card_bp, control_bp, recurrent_bp, installment_bp)
+from flask import Flask
 
-def register_routes(app):
-    app.register_blueprint(cards_bp)
-    app.register_blueprint(control_bp)
-    app.register_blueprint(recorrentes_bp)
+def register_routes(app: Flask):
+    try:
+        from app.Routes.card import card_bp
+        app.register_blueprint(card_bp)
+    except Exception:
+        # Se o arquivo foi nomeado diferente, ignore e continue
+        pass
 
+    try:
+        from app.Routes.control import control_bp
+        app.register_blueprint(control_bp)
+    except Exception:
+        pass
+
+    try:
+        from app.Routes.recurrent import recurrent_bp
+        app.register_blueprint(recurrent_bp)
+    except Exception:
+        pass
+
+    try:
+        from app.Routes.installment import installment_bp
+        app.register_blueprint(installment_bp)
+    except Exception:
+        pass
+
+    # rota raiz simples
     @app.route("/")
     def home():
         return {"message": "API Finance App funcionando"}

@@ -1,9 +1,9 @@
 from flask import Blueprint, jsonify, request
-from ..Utils.sheets import get_sheets
+from Utils.sheets import get_sheets
 
-recorrentes_bp = Blueprint("recorrentes", __name__)
+recurrents_bp = Blueprint("recurrent", __name__)
 
-@recorrentes_bp.route("/recorrentes", methods=["POST"])
+@recurrents_bp.route("/recurrent", methods=["POST"])
 def add_recorrente():
     _, _, sheet_parcelados = get_sheets()
     data = request.json
@@ -22,13 +22,13 @@ def add_recorrente():
     sheet_parcelados.append_row(new_row)
     return jsonify({"status": "success", "message": "Gasto recorrente adicionado"}), 201
 
-@recorrentes_bp.route("/recorrentes", methods=["GET"])
-def list_recorrentes():
+@recurrents_bp.route("/recurrent", methods=["GET"])
+def list_recurrents():
     _, _, sheet_parcelados = get_sheets()
     rows = sheet_parcelados.get_all_records()
     return jsonify(rows)
 
-@recorrentes_bp.route("/recorrentes/<int:rec_id>", methods=["GET"])
+@recurrents_bp.route("/recurrent/<int:rec_id>", methods=["GET"])
 def get_recorrente(rec_id):
     _, _, sheet_parcelados = get_sheets()
     rows = sheet_parcelados.get_all_records()
@@ -37,7 +37,7 @@ def get_recorrente(rec_id):
         return jsonify(rec)
     return jsonify({"error": "Recorrente não encontrado"}), 404
 
-@recorrentes_bp.route("/recorrentes/<int:rec_id>", methods=["PUT", "PATCH"])
+@recurrents_bp.route("/recurrent/<int:rec_id>", methods=["PUT", "PATCH"])
 def update_recorrente(rec_id):
     _, _, sheet_parcelados = get_sheets()
     data = request.json
@@ -59,7 +59,7 @@ def update_recorrente(rec_id):
             return jsonify({"status": "success", "message": "Recorrente atualizado"})
     return jsonify({"error": "Recorrente não encontrado"}), 404
 
-@recorrentes_bp.route("/recorrentes/<int:rec_id>", methods=["DELETE"])
+@recurrents_bp.route("/recurrent/<int:rec_id>", methods=["DELETE"])
 def delete_recorrente(rec_id):
     _, _, sheet_parcelados = get_sheets()
     rows = sheet_parcelados.get_all_records()
