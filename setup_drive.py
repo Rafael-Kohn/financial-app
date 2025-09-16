@@ -1,6 +1,6 @@
-import subprocess
-import sys
 import os
+import sys
+import subprocess
 import gspread
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -13,29 +13,41 @@ class SetupDrive:
         "https://www.googleapis.com/auth/drive"
     ]
 
-    def __init__(self, credentials_path="oauth_credentials.json", token_path="token.json", folder_name="FinanceApp"):
+    def __init__(self, credentials_path="oauth_credentials.json", token_path="token.json", folder_name="FinanceApp", venv_dir="venv"):
         self.credentials_path = credentials_path
         self.token_path = token_path
         self.folder_name = folder_name
+        self.venv_dir = venv_dir
+
+        self.setup_venv()              # Cria e ativa a venv
         self.creds = self.load_credentials()
         self.client = gspread.authorize(self.creds)
         self.drive_service = build("drive", "v3", credentials=self.creds)
 
+    # -------------------
+    # Credenciais Google
+    # -------------------
     def load_credentials(self):
         creds = None
         if os.path.exists(self.token_path):
             creds = Credentials.from_authorized_user_file(self.token_path, self.SCOPES)
         if not creds or not creds.valid:
             if creds and creds.expired and creds.refresh_token:
-                creds.refresh(Request())
+                try:
+                    creds.refresh(Request())
+                except Exception:
+                    os.remove(self.token_path)
+                    return self.load_credentials()
             else:
                 flow = InstalledAppFlow.from_client_secrets_file(self.credentials_path, self.SCOPES)
                 creds = flow.run_local_server(port=0)
-            # Salva token para próximos acessos
             with open(self.token_path, "w") as token_file:
                 token_file.write(creds.to_json())
         return creds
 
+    # -------------------
+    # Pastas e Planilhas
+    # -------------------
     def get_or_create_folder(self):
         query = f"name='{self.folder_name}' and mimeType='application/vnd.google-apps.folder'"
         results = self.drive_service.files().list(q=query, fields="files(id, name)").execute()
@@ -55,14 +67,9 @@ class SetupDrive:
             print(f"📄 Planilha encontrada: {sheet_name}")
         except gspread.SpreadsheetNotFound:
             spreadsheet = self.client.create(sheet_name)
-            # Move para a pasta correta
-            self.drive_service.files().update(
-                fileId=spreadsheet.id,
-                addParents=folder_id,
-                fields="id, parents"
-            ).execute()
+            self.drive_service.files().update(fileId=spreadsheet.id, addParents=folder_id, fields="id, parents").execute()
             print(f"📄 Planilha criada: {sheet_name}")
-            # Inicializa cabeçalhos
+            # Cabeçalhos iniciais
             sheet = spreadsheet.sheet1
             if sheet_name == "Cards":
                 sheet.update("A1:D1", [["ID", "Nome", "Proprietario", "Ultimos_Digitos"]])
@@ -72,42 +79,44 @@ class SetupDrive:
                 sheet.update("A1:J1", [["ID","Nome","Tipo","Valor","Forma","Parcelas","Data","Cartao_ID","Modo","Status"]])
             elif sheet_name == "Installment":
                 sheet.update("A1:J1", [["ID","Nome","Tipo","Valor","Forma","Parcelas","Data","Cartao_ID","Modo","Status"]])
-
         return spreadsheet
-    def setup_venv(self, venv_dir="venv", requirements_file="requirements.txt"):
-        """Cria a venv, instala dependências e faz o script usar o Python da venv."""
-        if not os.path.exists(venv_dir):
-            print(f"🔧 Criando virtualenv em {venv_dir}...")
-            subprocess.check_call([sys.executable, "-m", "venv", venv_dir])
-        else:
-            print(f"🔧 Virtualenv já existe em {venv_dir}")
 
-        # Define caminhos do Python e pip da venv
-        if os.name == "nt":
-            python_path = os.path.join(venv_dir, "Scripts", "python.exe")
-            pip_path = os.path.join(venv_dir, "Scripts", "pip.exe")
+    # -------------------
+    # Virtualenv
+    # -------------------
+    def setup_venv(self, requirements_file="requirements.txt"):
+        if not os.path.exists(self.venv_dir):
+            print(f"🔧 Criando virtualenv em {self.venv_dir}...")
+            subprocess.check_call([sys.executable, "-m", "venv", self.venv_dir])
         else:
-            python_path = os.path.join(venv_dir, "bin", "python")
-            pip_path = os.path.join(venv_dir, "bin", "pip")
+            print(f"🔧 Virtualenv já existe em {self.venv_dir}")
 
-        # Instala requirements
+        # Instalando requirements
+        pip_path = os.path.join(self.venv_dir, "Scripts", "pip.exe") if os.name == "nt" else os.path.join(self.venv_dir, "bin", "pip")
         if os.path.exists(requirements_file):
             print(f"📦 Instalando dependências de {requirements_file} na venv...")
             subprocess.check_call([pip_path, "install", "-r", requirements_file])
         else:
             print(f"⚠️ Arquivo {requirements_file} não encontrado.")
 
-        # Reexecuta o script atual usando o Python da venv
-        if sys.executable != python_path:
-            print(f"🚀 Reiniciando o script dentro da venv ({python_path})...")
-            os.execv(python_path, [python_path] + sys.argv)
+        # Ativando venv para o processo atual
+        if not os.environ.get("VIRTUAL_ENV"):
+            print("⚡ Ativando venv no processo atual...")
+            bin_path = "Scripts" if os.name == "nt" else "bin"
+            venv_bin = os.path.join(os.path.abspath(self.venv_dir), bin_path)
+            os.environ["VIRTUAL_ENV"] = os.path.abspath(self.venv_dir)
+            os.environ["PATH"] = venv_bin + os.pathsep + os.environ.get("PATH", "")
+            print("✅ Venv ativada no processo atual.")
+            print("🧪 Venv localizada em: "+os.environ.get("VIRTUAL_ENV"))
 
+        else:
+            print("✅ Já está dentro de uma venv, pulando ativação.")
+
+    # -------------------
+    # Setup completo
+    # -------------------
     def setup(self):
         folder_id = self.get_or_create_folder()
-        self.get_or_create_spreadsheet(folder_id, "Cards")
-        self.get_or_create_spreadsheet(folder_id, "Control")
-        self.get_or_create_spreadsheet(folder_id, "Recurrent")
-        self.get_or_create_spreadsheet(folder_id, "Installment")
+        for sheet_name in ["Cards", "Control", "Recurrent", "Installment"]:
+            self.get_or_create_spreadsheet(folder_id, sheet_name)
         print("✅ Setup completo!")
-        self.setup_venv()
-
