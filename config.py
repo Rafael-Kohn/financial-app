@@ -24,5 +24,6 @@ class Config:
     SHEET_NAMES = {
         "cards": "Cards",
         "control": "Control",
-        "parcelados": "Parcelados"
+        "recurrent": "Recurrent",
+        "installment": "Installment"
     }

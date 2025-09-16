@@ -68,29 +68,46 @@ class SetupDrive:
                 sheet.update("A1:D1", [["ID", "Nome", "Proprietario", "Ultimos_Digitos"]])
             elif sheet_name == "Control":
                 sheet.update("A1:J1", [["ID","Nome","Tipo","Valor","Forma","Parcelas","Data","Cartao_ID","Modo","Status"]])
-            elif sheet_name == "Parcelados":
+            elif sheet_name == "Recurrent":
                 sheet.update("A1:J1", [["ID","Nome","Tipo","Valor","Forma","Parcelas","Data","Cartao_ID","Modo","Status"]])
+            elif sheet_name == "Installment":
+                sheet.update("A1:J1", [["ID","Nome","Tipo","Valor","Forma","Parcelas","Data","Cartao_ID","Modo","Status"]])
+
         return spreadsheet
     def setup_venv(self, venv_dir="venv", requirements_file="requirements.txt"):
-        # Cria a venv se não existir
+        """Cria a venv, instala dependências e faz o script usar o Python da venv."""
         if not os.path.exists(venv_dir):
             print(f"🔧 Criando virtualenv em {venv_dir}...")
             subprocess.check_call([sys.executable, "-m", "venv", venv_dir])
         else:
             print(f"🔧 Virtualenv já existe em {venv_dir}")
 
-        # Instala requirements na venv
-        pip_path = os.path.join(venv_dir, "Scripts", "pip.exe") if os.name == "nt" else os.path.join(venv_dir, "bin", "pip")
+        # Define caminhos do Python e pip da venv
+        if os.name == "nt":
+            python_path = os.path.join(venv_dir, "Scripts", "python.exe")
+            pip_path = os.path.join(venv_dir, "Scripts", "pip.exe")
+        else:
+            python_path = os.path.join(venv_dir, "bin", "python")
+            pip_path = os.path.join(venv_dir, "bin", "pip")
+
+        # Instala requirements
         if os.path.exists(requirements_file):
             print(f"📦 Instalando dependências de {requirements_file} na venv...")
             subprocess.check_call([pip_path, "install", "-r", requirements_file])
         else:
             print(f"⚠️ Arquivo {requirements_file} não encontrado.")
 
+        # Reexecuta o script atual usando o Python da venv
+        if sys.executable != python_path:
+            print(f"🚀 Reiniciando o script dentro da venv ({python_path})...")
+            os.execv(python_path, [python_path] + sys.argv)
+
     def setup(self):
         folder_id = self.get_or_create_folder()
         self.get_or_create_spreadsheet(folder_id, "Cards")
         self.get_or_create_spreadsheet(folder_id, "Control")
-        self.get_or_create_spreadsheet(folder_id, "Parcelados")
+        self.get_or_create_spreadsheet(folder_id, "Recurrent")
+        self.get_or_create_spreadsheet(folder_id, "Installment")
         print("✅ Setup completo!")
         self.setup_venv()
+
