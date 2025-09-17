@@ -1,50 +1,53 @@
 from flask import Blueprint, jsonify, request
-from Utils.sheets import get_sheets
+from ..Utils.sheets import get_sheets
+from ..Schemas.recurrent import RecurrentSchema
 
-recurrents_bp = Blueprint("recurrent", __name__)
+recurrent_bp = Blueprint("recurrent", __name__)
+recurrent_schema = RecurrentSchema()
 
-@recurrents_bp.route("/recurrent", methods=["POST"])
-def add_recorrente():
-    _, _, sheet_parcelados = get_sheets()
+@recurrent_bp.route("/recurrent", methods=["POST"])
+def add_recurrent():
     data = request.json
+    errors = recurrent_schema.validate(data)
+    if errors:
+        return jsonify({"status": "error", "errors": errors}), 400
+
+    _, _, sheet_recurrent = get_sheets()
     new_row = [
-        data.get("ID"),
-        data.get("Nome"),
-        data.get("Tipo"),
-        data.get("Valor"),
-        data.get("Forma"),
-        data.get("Parcelas", ""),
-        data.get("Data", ""),
-        data.get("Cartao_ID"),
-        data.get("Modo"),
-        "ativo"
+        data["ID"], data["Nome"], data["Tipo"], data["Valor"], data["Forma"],
+        data.get("Parcelas", ""), data.get("Data", ""), data.get("Cartao_ID"),
+        data.get("Modo"), "ativo"
     ]
-    sheet_parcelados.append_row(new_row)
-    return jsonify({"status": "success", "message": "Gasto recorrente adicionado"}), 201
+    sheet_recurrent.append_row(new_row)
+    return jsonify({"status": "success", "message": "Recorrente adicionado"}), 201
 
-@recurrents_bp.route("/recurrent", methods=["GET"])
-def list_recurrents():
-    _, _, sheet_parcelados = get_sheets()
-    rows = sheet_parcelados.get_all_records()
-    return jsonify(rows)
+@recurrent_bp.route("/recurrent", methods=["GET"])
+def list_recurrent():
+    _, _, sheet_recurrent = get_sheets()
+    rows = sheet_recurrent.get_all_records()
+    return jsonify([recurrent_schema.dump(row) for row in rows])
 
-@recurrents_bp.route("/recurrent/<int:rec_id>", methods=["GET"])
-def get_recorrente(rec_id):
-    _, _, sheet_parcelados = get_sheets()
-    rows = sheet_parcelados.get_all_records()
+@recurrent_bp.route("/recurrent/<int:rec_id>", methods=["GET"])
+def get_recurrent(rec_id):
+    _, _, sheet_recurrent = get_sheets()
+    rows = sheet_recurrent.get_all_records()
     rec = next((row for row in rows if row["ID"] == rec_id), None)
     if rec:
-        return jsonify(rec)
+        return jsonify(recurrent_schema.dump(rec))
     return jsonify({"error": "Recorrente não encontrado"}), 404
 
-@recurrents_bp.route("/recurrent/<int:rec_id>", methods=["PUT", "PATCH"])
-def update_recorrente(rec_id):
-    _, _, sheet_parcelados = get_sheets()
+@recurrent_bp.route("/recurrent/<int:rec_id>", methods=["PUT", "PATCH"])
+def update_recurrent(rec_id):
     data = request.json
-    rows = sheet_parcelados.get_all_records()
+    errors = recurrent_schema.validate(data, partial=True)
+    if errors:
+        return jsonify({"status": "error", "errors": errors}), 400
+
+    _, _, sheet_recurrent = get_sheets()
+    rows = sheet_recurrent.get_all_records()
     for idx, row in enumerate(rows, start=2):
         if row["ID"] == rec_id:
-            sheet_parcelados.update(f"A{idx}:J{idx}", [[
+            updated_row = [
                 data.get("ID", row["ID"]),
                 data.get("Nome", row["Nome"]),
                 data.get("Tipo", row["Tipo"]),
@@ -55,16 +58,17 @@ def update_recorrente(rec_id):
                 data.get("Cartao_ID", row["Cartao_ID"]),
                 data.get("Modo", row["Modo"]),
                 data.get("Status", row["Status"])
-            ]])
+            ]
+            sheet_recurrent.update(f"A{idx}:J{idx}", [updated_row])
             return jsonify({"status": "success", "message": "Recorrente atualizado"})
     return jsonify({"error": "Recorrente não encontrado"}), 404
 
-@recurrents_bp.route("/recurrent/<int:rec_id>", methods=["DELETE"])
-def delete_recorrente(rec_id):
-    _, _, sheet_parcelados = get_sheets()
-    rows = sheet_parcelados.get_all_records()
+@recurrent_bp.route("/recurrent/<int:rec_id>", methods=["DELETE"])
+def delete_recurrent(rec_id):
+    _, _, sheet_recurrent = get_sheets()
+    rows = sheet_recurrent.get_all_records()
     for idx, row in enumerate(rows, start=2):
         if row["ID"] == rec_id:
-            sheet_parcelados.delete_row(idx)
+            sheet_recurrent.delete_row(idx)
             return jsonify({"status": "success", "message": "Recorrente removido"})
     return jsonify({"error": "Recorrente não encontrado"}), 404

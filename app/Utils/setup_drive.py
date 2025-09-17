@@ -1,6 +1,4 @@
 import os
-import sys
-import subprocess
 import gspread
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -13,13 +11,10 @@ class SetupDrive:
         "https://www.googleapis.com/auth/drive"
     ]
 
-    def __init__(self, credentials_path="oauth_credentials.json", token_path="token.json", folder_name="FinanceApp", venv_dir="venv"):
+    def __init__(self, credentials_path="oauth_credentials.json", token_path="token.json", folder_name="FinanceApp"):
         self.credentials_path = credentials_path
         self.token_path = token_path
         self.folder_name = folder_name
-        self.venv_dir = venv_dir
-
-        self.setup_venv()              # Cria e ativa a venv
         self.creds = self.load_credentials()
         self.client = gspread.authorize(self.creds)
         self.drive_service = build("drive", "v3", credentials=self.creds)
@@ -80,37 +75,6 @@ class SetupDrive:
             elif sheet_name == "Installment":
                 sheet.update("A1:J1", [["ID","Nome","Tipo","Valor","Forma","Parcelas","Data","Cartao_ID","Modo","Status"]])
         return spreadsheet
-
-    # -------------------
-    # Virtualenv
-    # -------------------
-    def setup_venv(self, requirements_file="requirements.txt"):
-        if not os.path.exists(self.venv_dir):
-            print(f"🔧 Criando virtualenv em {self.venv_dir}...")
-            subprocess.check_call([sys.executable, "-m", "venv", self.venv_dir])
-        else:
-            print(f"🔧 Virtualenv já existe em {self.venv_dir}")
-
-        # Instalando requirements
-        pip_path = os.path.join(self.venv_dir, "Scripts", "pip.exe") if os.name == "nt" else os.path.join(self.venv_dir, "bin", "pip")
-        if os.path.exists(requirements_file):
-            print(f"📦 Instalando dependências de {requirements_file} na venv...")
-            subprocess.check_call([pip_path, "install", "-r", requirements_file])
-        else:
-            print(f"⚠️ Arquivo {requirements_file} não encontrado.")
-
-        # Ativando venv para o processo atual
-        if not os.environ.get("VIRTUAL_ENV"):
-            print("⚡ Ativando venv no processo atual...")
-            bin_path = "Scripts" if os.name == "nt" else "bin"
-            venv_bin = os.path.join(os.path.abspath(self.venv_dir), bin_path)
-            os.environ["VIRTUAL_ENV"] = os.path.abspath(self.venv_dir)
-            os.environ["PATH"] = venv_bin + os.pathsep + os.environ.get("PATH", "")
-            print("✅ Venv ativada no processo atual.")
-            print("🧪 Venv localizada em: "+os.environ.get("VIRTUAL_ENV"))
-
-        else:
-            print("✅ Já está dentro de uma venv, pulando ativação.")
 
     # -------------------
     # Setup completo

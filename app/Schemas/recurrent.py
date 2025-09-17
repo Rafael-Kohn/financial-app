@@ -20,4 +20,4 @@ class RecurrentSchema(BaseSchema):
     data = fields.Str(data_key="DATA", attribute="data", required=False, allow_none=True)
     cartao_id = fields.Int(data_key="CARTAO_ID", attribute="cartao_id", required=False, allow_none=True)
     modo = fields.Str(data_key="MODO", attribute="modo", required=False, allow_none=True)
-    status = fields.Str(data_key="STATUS", attribute="status", required=False, missing="ativo")
+    status = fields.Str(data_key="STATUS", attribute="status", required=False, load_default="ativo")

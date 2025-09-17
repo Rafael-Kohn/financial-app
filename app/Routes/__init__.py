@@ -1,33 +1,28 @@
-# importa os blueprints das rotas (seus arquivos de rota devem expor card_bp, control_bp, recurrent_bp, installment_bp)
-from flask import Flask
+from flask import Flask, jsonify
 
 def register_routes(app: Flask):
-    try:
-        from app.Routes.card import card_bp
-        app.register_blueprint(card_bp)
-    except Exception:
-        # Se o arquivo foi nomeado diferente, ignore e continue
-        pass
+    """
+    Registra todos os blueprints manualmente de forma clara.
+    """
 
-    try:
-        from app.Routes.control import control_bp
-        app.register_blueprint(control_bp)
-    except Exception:
-        pass
+    # Lista de módulos de rota e seus blueprints
+    routes = [
+        ("app.Routes.card", "card_bp"),
+        ("app.Routes.control", "control_bp"),
+        ("app.Routes.installment", "installment_bp"),
+        ("app.Routes.recurrent", "recurrent_bp")
+    ]
 
-    try:
-        from app.Routes.recurrent import recurrent_bp
-        app.register_blueprint(recurrent_bp)
-    except Exception:
-        pass
+    for module_path, bp_name in routes:
+        try:
+            module = __import__(module_path, fromlist=[bp_name])
+            blueprint = getattr(module, bp_name)
+            app.register_blueprint(blueprint)
+            print(f"✅ Blueprint registrado: {bp_name}")
+        except (ImportError, AttributeError) as e:
+            print(f"⚠️ {bp_name} não encontrado em {module_path}, ignorando... ({e})")
 
-    try:
-        from app.Routes.installment import installment_bp
-        app.register_blueprint(installment_bp)
-    except Exception:
-        pass
-
-    # rota raiz simples
+    # Rota raiz
     @app.route("/")
     def home():
-        return {"message": "API Finance App funcionando"}
+        return jsonify({"message": "API Finance App funcionando 🚀"})

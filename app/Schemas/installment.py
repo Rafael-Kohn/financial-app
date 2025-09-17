@@ -15,5 +15,5 @@ class InstallmentSchema(BaseSchema):
     numero = fields.Int(data_key="NUMERO", attribute="numero", required=True)
     valor = fields.Float(data_key="VALOR", attribute="valor", required=True)
     vencimento = fields.Str(data_key="VENCIMENTO", attribute="vencimento", required=True)
-    pago = fields.Bool(data_key="PAGO", attribute="pago", required=False, missing=False)
+    pago = fields.Bool(data_key="PAGO", attribute="pago", required=False, load_default=False)
     control_id = fields.Int(data_key="CONTROL_ID", attribute="control_id", required=False, allow_none=True)

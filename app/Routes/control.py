@@ -1,74 +1,62 @@
 from flask import Blueprint, jsonify, request
-from ..Utils.sheets import get_sheets
+from ..Utils.sheets import get_sheets, fetch_controls
+from ..Utils.sheets import Control
 
 control_bp = Blueprint("control", __name__)
 
 @control_bp.route("/control", methods=["POST"])
-def add_gasto():
-    _, sheet_control, sheet_parcelados = get_sheets()
+def add_control():
     data = request.json
-    new_row = [
-        data.get("ID"),
-        data.get("Nome"),
-        data.get("Tipo"),
-        data.get("Valor"),
-        data.get("Forma"),
-        data.get("Parcelas", 1),
-        data.get("Data"),
-        data.get("Cartao_ID"),
-        data.get("Modo"),
-        "ativo"
-    ]
-    sheet_control.append_row(new_row)
+    try:
+        control = Control.from_sheet_row(data)
+    except Exception as e:
+        return jsonify({"status": "error", "message": f"Dados inválidos: {e}"}), 400
 
-    if int(data.get("Parcelas", 1)) > 1:
-        sheet_parcelados.append_row(new_row)
+    _, sheet_control, sheet_installment, _ = get_sheets()
+    sheet_control.append_row(control.to_sheet_row())
+
+    if control.parcelas > 1:
+        sheet_installment.append_row(control.to_sheet_row())
 
     return jsonify({"status": "success", "message": "Gasto adicionado"}), 201
 
 @control_bp.route("/control", methods=["GET"])
 def list_control():
-    _, sheet_control, _ = get_sheets()
-    rows = sheet_control.get_all_records()
-    return jsonify(rows)
+    controls = fetch_controls()
+    return jsonify([c.__dict__ for c in controls])
 
 @control_bp.route("/control/<int:gasto_id>", methods=["GET"])
-def get_gasto(gasto_id):
-    _, sheet_control, _ = get_sheets()
-    rows = sheet_control.get_all_records()
-    gasto = next((row for row in rows if row["ID"] == gasto_id), None)
-    if gasto:
-        return jsonify(gasto)
+def get_control(gasto_id: int):
+    controls = fetch_controls()
+    control = next((c for c in controls if c.id == gasto_id), None)
+    if control:
+        return jsonify(control.__dict__)
     return jsonify({"error": "Gasto não encontrado"}), 404
 
 @control_bp.route("/control/<int:gasto_id>", methods=["PUT", "PATCH"])
-def update_gasto(gasto_id):
-    _, sheet_control, _ = get_sheets()
+def update_control(gasto_id: int):
     data = request.json
+    _, sheet_control, _, _ = get_sheets()
     rows = sheet_control.get_all_records()
+
     for idx, row in enumerate(rows, start=2):
-        if row["ID"] == gasto_id:
-            sheet_control.update(f"A{idx}:J{idx}", [[
-                data.get("ID", row["ID"]),
-                data.get("Nome", row["Nome"]),
-                data.get("Tipo", row["Tipo"]),
-                data.get("Valor", row["Valor"]),
-                data.get("Forma", row["Forma"]),
-                data.get("Parcelas", row["Parcelas"]),
-                data.get("Data", row["Data"]),
-                data.get("Cartao_ID", row["Cartao_ID"]),
-                data.get("Modo", row["Modo"]),
-                data.get("Status", row["Status"])
-            ]])
+        row_id = row.get("ID") or row.get("Id") or row.get("id")
+        if row_id is not None and int(row_id) == gasto_id:
+            updated = Control.from_sheet_row({**row, **data})
+            sheet_control.update(f"A{idx}:J{idx}", [updated.to_sheet_row()])
             return jsonify({"status": "success", "message": "Gasto atualizado"})
+
     return jsonify({"error": "Gasto não encontrado"}), 404
 
 @control_bp.route("/control/<int:gasto_id>", methods=["DELETE"])
-def delete_gasto(gasto_id):
-    _, sheet_control, _ = get_sheets()
+def delete_control(gasto_id: int):
+    _, sheet_control, _, _ = get_sheets()
     rows = sheet_control.get_all_records()
+
     for idx, row in enumerate(rows, start=2):
-        if row["ID"] == gasto_id:
-            sheet_control.delete_row(idx)
+        row_id = row.get("ID") or row.get("Id") or row.get("id")
+        if row_id is not None and int(row_id) == gasto_id:
+            sheet_control.delete_rows(idx)
             return jsonify({"status": "success", "message": "Gasto removido"})
+
     return jsonify({"error": "Gasto não encontrado"}), 404
