@@ -1,0 +1,66 @@
+#:import dp kivy.metrics.dp
+#:import Window kivy.core.window.Window
+
+<AnalysisScreen>:
+    gastos_box: gastos_box
+    chat_input: chat_input
+    chat_output: chat_output
+
+    BoxLayout:
+        orientation: "vertical"
+        padding: dp(10)
+        spacing: dp(10)
+
+        Label:
+            text: "Análise Financeira"
+            font_size: Window.width * 0.055
+            size_hint_y: None
+            height: self.texture_size[1] + dp(10)
+
+        ScrollView:
+            size_hint_y: 0.5
+            BoxLayout:
+                id: gastos_box
+                orientation: "vertical"
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(5)
+
+        BoxLayout:
+            orientation: "horizontal"
+            size_hint_y: None
+            height: dp(50)
+            spacing: dp(10)
+
+            Button:
+                text: "Exportar Planilha"
+                font_size: Window.width * 0.04
+                on_release: root.exportar()
+
+            Button:
+                text: "Voltar"
+                font_size: Window.width * 0.04
+                on_release: app.sm.current = "menu"
+
+        TextInput:
+            id: chat_input
+            hint_text: "Converse com o Gemini..."
+            font_size: Window.width * 0.04
+            size_hint_y: None
+            height: dp(45)
+
+        Button:
+            text: "Enviar"
+            font_size: Window.width * 0.045
+            size_hint_y: None
+            height: dp(50)
+            on_release: root.conversar()
+
+        ScrollView:
+            Label:
+                id: chat_output
+                text: ""
+                font_size: Window.width * 0.04
+                text_size: self.width, None
+                size_hint_y: None
+                height: self.texture_size[1] + dp(10)

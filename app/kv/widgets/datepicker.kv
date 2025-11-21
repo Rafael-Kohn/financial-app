@@ -1,0 +1,27 @@
+# ui/widgets/datepicker.kv
+<DatePicker>:
+    size_hint: .8, .6
+    auto_dismiss: False
+    background_color: 0,0,0,0.4
+
+    BoxLayout:
+        orientation: "vertical"
+        padding: dp(20)
+        spacing: dp(15)
+        canvas.before:
+            Color:
+                rgba: 0.1,0.1,0.1,1
+            RoundedRectangle:
+                pos: self.pos
+                size: self.size
+                radius: [20]
+
+        # aqui você coloca o calendário ou campos de data
+
+        Button:
+            text: "Confirmar"
+            on_release: root.select("2025-01-01")
+
+        Button:
+            text: "Cancelar"
+            on_release: root.dismiss()

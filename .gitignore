@@ -1,0 +1,46 @@
+# Essentials for this Kivy/Android Python project
+
+# Python compiled files
+__pycache__/
+*.py[cod]
+
+# Virtual environments / env files
+.env
+.venv
+venv/
+env/
+
+# Buildozer / Android
+.buildozer/
+buildozer.spec
+/.gradle/
+.gradle/
+local.properties
+*.apk
+*.aab
+*.ap_
+*.keystore
+
+# Build and distribution folders
+build/
+dist/
+bin/
+
+# IDEs
+.vscode/
+.idea/
+
+# Databases and logs
+*.db
+*.sqlite3
+*.log
+
+# System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary / backup
+*~
+*.bak
+*.swp

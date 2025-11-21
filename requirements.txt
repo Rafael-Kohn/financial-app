@@ -1,0 +1,4 @@
+kivy
+sqlite3
+requests
+buildozer

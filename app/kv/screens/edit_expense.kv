@@ -1,0 +1,102 @@
+#:import dp kivy.metrics.dp
+#:import Window kivy.core.window.Window
+
+<EditExpenseScreen>:
+    cartao: cartao
+    tipo: tipo
+    valor: valor
+    parcelas: parcelas
+    data_recorrencia: data_recorrencia
+    frequencia: frequencia
+    nome: nome
+    categoria: categoria
+
+    BoxLayout:
+        orientation: "vertical"
+        padding: dp(20)
+        spacing: dp(10)
+
+        Spinner:
+            id: categoria
+            text: "Categoria"
+            values: []
+            font_size: Window.width * 0.04
+            size_hint_y: None
+            height: dp(45)
+
+        Spinner:
+            id: cartao
+            text: "Selecione um cartão"
+            font_size: Window.width * 0.04
+            size_hint_y: None
+            height: dp(45)
+
+        Spinner:
+            id: tipo
+            text: "Tipo de gasto"
+            font_size: Window.width * 0.04
+            values: ["Crédito", "Débito/Pix", "Recorrente"]
+            size_hint_y: None
+            height: dp(45)
+
+        TextInput:
+            id: valor
+            hint_text: "Valor"
+            font_size: Window.width * 0.04
+            size_hint_y: None
+            height: dp(45)
+            input_filter: 'float'
+
+        TextInput:
+            id: parcelas
+            hint_text: "Parcelas"
+            font_size: Window.width * 0.04
+            size_hint_y: None
+            height: dp(45)
+            input_filter: 'int'
+
+        BoxLayout:
+            orientation: "horizontal"
+            size_hint_y: None
+            height: dp(45)
+
+            TextInput:
+                id: data_recorrencia
+                font_size: Window.width * 0.04
+                hint_text: "Data"
+                readonly: True
+                multiline: False
+
+            Button:
+                text: "📅"
+                size_hint_x: None
+                width: dp(60)
+                on_release: root.abrir_calendario()
+
+        TextInput:
+            id: frequencia
+            hint_text: "Frequência"
+            font_size: Window.width * 0.04
+            size_hint_y: None
+            height: dp(45)
+
+        TextInput:
+            id: nome
+            hint_text: "Nome do gasto"
+            font_size: Window.width * 0.04
+            size_hint_y: None
+            height: dp(45)
+
+        Button:
+            text: "Salvar Alterações"
+            font_size: Window.width * 0.045
+            size_hint_y: None
+            height: dp(55)
+            on_release: root.salvar()
+
+        Button:
+            text: "Voltar"
+            font_size: Window.width * 0.045
+            size_hint_y: None
+            height: dp(55)
+            on_release: app.sm.current = "manage_data"

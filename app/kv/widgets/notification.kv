@@ -1,0 +1,20 @@
+<NotificationWidget>:
+    size_hint: None, None
+    size: dp(300), dp(60)
+    pos_hint: {"center_x": 0.5, "y": 0}
+    padding: dp(10)
+    spacing: dp(10)
+    canvas.before:
+        Color:
+            rgba: root.bg_color
+        RoundedRectangle:
+            radius: [15]
+            pos: self.pos
+            size: self.size
+
+    Label:
+        text: root.message
+        color: 1,1,1,1
+        halign: "left"
+        valign: "middle"
+        text_size: self.size

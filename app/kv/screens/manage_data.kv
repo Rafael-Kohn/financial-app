@@ -1,0 +1,54 @@
+#:import dp kivy.metrics.dp
+
+<ManageDataScreen>:
+    tipo_selecao: tipo_selecao
+    lista_box: lista_box
+    status_label: status_label
+
+    BoxLayout:
+        orientation: "vertical"
+        spacing: 10
+        padding: 10
+
+        BoxLayout:
+            size_hint_y: None
+            height: dp(45)
+            spacing: 10
+
+            ToggleButton:
+                id: tipo_selecao
+                text: "Gastos"
+                state: "down"
+                group: "manage"
+                on_release: root.carregar("gastos")
+
+            ToggleButton:
+                text: "Cartões"
+                group: "manage"
+                on_release: root.carregar("cartoes")
+
+            ToggleButton:
+                text: "Categorias"
+                group: "manage"
+                on_release: root.carregar("categorias")
+
+            Button:
+                text: "Voltar"
+                size_hint_y: None
+                height: dp(45)
+                on_release: root.manager.current = "menu"
+
+    
+        ScrollView:
+            BoxLayout:
+                id: lista_box
+                orientation: "vertical"
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: 5
+
+        Label:
+            id: status_label
+            size_hint_y: None
+            height: dp(30)
+            text: ""

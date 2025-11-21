@@ -1,0 +1,49 @@
+#:import dp kivy.metrics.dp
+#:import Window kivy.core.window.Window
+
+<MenuScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: dp(20)
+        spacing: dp(15)
+
+        Label:
+            text: "Menu Principal"
+            font_size: Window.width * 0.06
+            size_hint_y: None
+            height: self.texture_size[1] + dp(10)
+
+        Button:
+            text: "Criar Categoria"
+            font_size: Window.width * 0.045
+            size_hint_y: None
+            height: dp(55)
+            on_release: app.sm.current = "criar_categoria"
+
+        Button:
+            text: "Adicionar Cartão"
+            font_size: Window.width * 0.045
+            size_hint_y: None
+            height: dp(55)
+            on_release: app.sm.current = "add_card"
+
+        Button:
+            text: "Adicionar Gasto"
+            font_size: Window.width * 0.045
+            size_hint_y: None
+            height: dp(55)
+            on_release: app.sm.current = "add_expense"
+
+        Button:
+            text: "Tela de Análise"
+            font_size: Window.width * 0.045
+            size_hint_y: None
+            height: dp(55)
+            on_release: app.sm.current = "analysis"
+
+        Button:
+            text: "Gerenciar Dados"
+            font_size: Window.width * 0.045
+            size_hint_y: None
+            height: dp(55)
+            on_release: app.sm.current = "manage_data"

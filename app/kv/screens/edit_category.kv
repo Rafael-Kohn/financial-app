@@ -1,0 +1,29 @@
+#:import dp kivy.metrics.dp
+
+<EditCategoryScreen>:
+    nome: nome_input
+    BoxLayout:
+        orientation: "vertical"
+        padding: dp(20)
+        spacing: dp(10)
+
+        Label:
+            text: "Editar Categoria"
+            size_hint_y: None
+            height: dp(40)
+
+        TextInput:
+            id: nome_input
+            multiline: False
+
+        Button:
+            text: "Salvar"
+            size_hint_y: None
+            height: dp(45)
+            on_release: root.salvar()
+
+        Button:
+            text: "Cancelar"
+            size_hint_y: None
+            height: dp(45)
+            on_release: root.manager.current = "manage_data"

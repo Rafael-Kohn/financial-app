@@ -1,0 +1,55 @@
+#:import dp kivy.metrics.dp
+#:import Window kivy.core.window.Window
+
+<AddCardScreen>:
+    banco: banco
+    responsavel: responsavel
+    apelido: apelido
+    ultimos_digitos: ultimos_digitos
+
+    BoxLayout:
+        orientation: "vertical"
+        padding: dp(20)
+        spacing: dp(10)
+
+        TextInput:
+            id: banco
+            hint_text: "Banco"
+            font_size: Window.width * 0.04
+            size_hint_y: None
+            height: dp(45)
+
+        TextInput:
+            id: responsavel
+            hint_text: "Responsável"
+            font_size: Window.width * 0.04
+            size_hint_y: None
+            height: dp(45)
+
+        TextInput:
+            id: apelido
+            hint_text: "Apelido do Cartão"
+            font_size: Window.width * 0.04
+            size_hint_y: None
+            height: dp(45)
+
+        TextInput:
+            id: ultimos_digitos
+            hint_text: "Últimos 4 dígitos"
+            font_size: Window.width * 0.04
+            size_hint_y: None
+            height: dp(45)
+
+        Button:
+            text: "Salvar"
+            font_size: Window.width * 0.045
+            size_hint_y: None
+            height: dp(55)
+            on_release: root.salvar_cartao()
+
+        Button:
+            text: "Voltar"
+            font_size: Window.width * 0.045
+            size_hint_y: None
+            height: dp(55)
+            on_release: app.sm.current = "menu"

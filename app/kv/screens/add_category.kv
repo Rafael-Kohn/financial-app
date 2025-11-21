@@ -1,0 +1,30 @@
+#:import dp kivy.metrics.dp
+
+<CategoryCreateScreen>:
+    input_nome: input_nome
+    BoxLayout:
+        orientation: "vertical"
+        padding: 20
+        spacing: 10
+
+        Label:
+            text: "Criar Categoria"
+            font_size: dp(22)
+
+        TextInput:
+            id: input_nome
+            hint_text: "Nome da categoria"
+            size_hint_y: None
+            height: dp(45)
+
+        Button:
+            text: "Salvar"
+            size_hint_y: None
+            height: dp(45)
+            on_release: root.salvar()
+
+        Button:
+            text: "Voltar"
+            size_hint_y: None
+            height: dp(45)
+            on_release: app.sm.current = "menu"
