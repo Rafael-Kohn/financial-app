@@ -22,7 +22,7 @@ from .database import (
 from .paths import root_path, db_path, file_exists
 from .notify import Notify
 from .formatter import format_currency, simple_text_clean, format_date
-
+from .env_utils import save_gemini_key
 __all__ = [
     # database
     "connect", "init_db",
@@ -36,4 +36,6 @@ __all__ = [
     "Notify",
     # formater
     "format_currency", "simple_text_clean","format_date",
+    # env_utils
+    "save_gemini_key",  
 ]
