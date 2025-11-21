@@ -1,7 +1,7 @@
 from kivy.uix.screenmanager import Screen
 from kivy.properties import ObjectProperty
 from kivy.app import App
-from ..utils.notify import Notify
+from app.utils.notify import Notify
 
 class EditCategoryScreen(Screen):
     nome = ObjectProperty(None)

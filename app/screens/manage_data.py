@@ -5,8 +5,8 @@ from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
-
-from ..utils.notify import Notify
+from app.utils.formatter import format_currency, format_date
+from app.utils.notify import Notify
 
 
 class ManageDataScreen(Screen):
@@ -44,7 +44,7 @@ class ManageDataScreen(Screen):
     def _linha_gasto(self, g):
         linha = BoxLayout(size_hint_y=None, height=40, spacing=10)
 
-        linha.add_widget(Label(text=f"{g.nome} - R${g.valor:.2f} [{g.categoria}]"))
+        linha.add_widget(Label(text=f"{format_date(g.data_recorrencia)}- {g.nome}: {format_currency(g.valor)} - {g.tipo} [{g.categoria}]"))
 
         btn_edit = Button(text="Editar", size_hint_x=None, width=80)
         btn_edit.bind(on_release=lambda x: self.editar_gasto(g))

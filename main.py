@@ -3,13 +3,18 @@ from kivy.uix.screenmanager import ScreenManager
 from kivy.uix.floatlayout import FloatLayout
 from kivy.lang import Builder
 
-from app.utils.notify import Notify
-from app.utils.database import init_db
+from app.models.card import Card
+from app.models.category import Category
+from app.models.expense import Expense
 
 from app.services.card_service import CardService
 from app.services.category_service import CategoryService
 from app.services.expense_service import ExpenseService
-from app.services.excel_service import export_to_excel  
+from app.services.excel_service import export_to_excel
+from app.services.finance_service import gerar_resumo_gastos
+from app.services.gemini_service import ask_gemini
+
+from app.utils import init_db, Notify, format_currency
 
 from app.screens.menu import MenuScreen
 from app.screens.add_card import AddCardScreen
@@ -17,10 +22,10 @@ from app.screens.add_expense import AddExpenseScreen
 from app.screens.manage_data import ManageDataScreen
 from app.screens.analysis import AnalysisScreen
 from app.screens.create_category import CategoryCreateScreen
-
 from app.screens.edit_category import EditCategoryScreen
 from app.screens.edit_card import EditCardScreen
 from app.screens.edit_expense import EditExpenseScreen
+
 
 
 class FinancialApp(App):

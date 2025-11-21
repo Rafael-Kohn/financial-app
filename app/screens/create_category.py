@@ -1,7 +1,7 @@
 from kivy.uix.screenmanager import Screen
 from kivy.properties import ObjectProperty
-from ..services.category_service import CategoryService
-from ..utils.notify import Notify
+from app.services.category_service import CategoryService
+from app.utils.notify import Notify
 import sqlite3
 
 class CategoryCreateScreen(Screen):

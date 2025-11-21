@@ -195,7 +195,7 @@ def create_gasto(cartao_id, tipo, valor, parcelas,
 def read_gastos():
     conn = connect()
     cur = conn.cursor()
-    cur.execute("SELECT * FROM gastos ORDER BY nome")
+    cur.execute("SELECT * FROM gastos ORDER BY data_recorrencia")
     rows = cur.fetchall()
     conn.close()
     return [_to_gasto(r) for r in rows]

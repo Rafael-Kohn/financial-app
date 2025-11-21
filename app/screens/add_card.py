@@ -1,8 +1,8 @@
 from kivy.uix.screenmanager import Screen
 from kivy.properties import ObjectProperty
-from ..models.card import Card
+from app.models.card import Card
 import sqlite3
-from ..utils.notify import Notify
+from app.utils.notify import Notify
 
 class AddCardScreen(Screen):
     banco = ObjectProperty(None)

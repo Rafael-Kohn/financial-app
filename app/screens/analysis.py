@@ -1,7 +1,7 @@
 from kivy.uix.screenmanager import Screen
 from kivy.properties import ObjectProperty
-from ..services.finance_service import gerar_resumo_gastos
-from ..services.gemini_service import ask_gemini
+from app.services.finance_service import gerar_resumo_gastos
+from app.services.gemini_service import ask_gemini
 
 class AnalysisScreen(Screen):
     chat_input = ObjectProperty(None)

@@ -1,10 +1,10 @@
 from kivy.uix.screenmanager import Screen
 from kivy.properties import ObjectProperty
 from kivy.app import App
-from ..utils.notify import Notify
-from ..models.expense import Expense
+from app.utils.notify import Notify
+from app.models.expense import Expense
 from datetime import datetime
-from ..widgets.datepicker import DatePicker
+from app.widgets.datepicker import DatePicker
 
 
 class EditExpenseScreen(Screen):

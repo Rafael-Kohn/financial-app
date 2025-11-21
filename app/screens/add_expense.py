@@ -2,7 +2,7 @@ from kivy.uix.screenmanager import Screen
 from kivy.properties import ObjectProperty
 from kivy.app import App
 from datetime import datetime
-from ..widgets.datepicker import DatePicker
+from app.widgets.datepicker import DatePicker
 
 class AddExpenseScreen(Screen): 
     cartao = ObjectProperty(None)
